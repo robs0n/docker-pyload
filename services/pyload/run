@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "Starting Pyload"
+exec /sbin/setuser abc /opt/pyload/pyLoadCore.py

@@ -1,14 +1,11 @@
-FROM ubuntu:trusty
+FROM linuxserver/baseimage:latest
 MAINTAINER Patrick Oberdorf "patrick@oberdorf.net"
 
 # Set the locale
-RUN locale-gen en_US.UTF-8  
-ENV LANG en_US.UTF-8  
-ENV LANGUAGE en_US:en  
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
-
-RUN echo "deb http://archive.ubuntu.com/ubuntu/ trusty-security multiverse" >> /etc/apt/sources.list
-RUN echo "deb-src http://archive.ubuntu.com/ubuntu/ trusty-security multiverse" >> /etc/apt/sources.list
 
 RUN apt-get update && apt-get install -y python \
         python-pycurl \
@@ -19,10 +16,10 @@ RUN apt-get update && apt-get install -y python \
         unrar \
         gocr \
         python-django \
-	python-pyxmpp \
+        python-pyxmpp \
         git \
         rhino \
-	wget \
+        wget \
         && apt-get clean \
         && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -34,12 +31,11 @@ RUN git clone https://github.com/pyload/pyload.git /opt/pyload \
 	&& rm module/plugins/hooks/UpdateManager.py \
 	&& wget https://gist.github.com/GammaC0de/a77279b6588c11aed9c9/raw/e67c25e144991612519940a67d8417ea43069a66/UpdateManager.py -O module/plugins/hooks/UpdateManager.py
 
-ADD pyload-config/ /tmp/pyload-config
-ADD run.sh /run.sh
-RUN chmod +x /run.sh
+COPY pyload-config/ /tmp/pyload-config
+COPY init/ /etc/my_init.d/
+COPY services/ /etc/service/
+RUN chmod -v +x /etc/service/*/run /etc/my_init.d/*.sh
 
 EXPOSE 8000
 VOLUME /opt/pyload/pyload-config
 VOLUME /opt/pyload/Downloads
-
-CMD ["/run.sh"]
